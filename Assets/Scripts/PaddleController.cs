@@ -38,6 +38,11 @@ public class PaddleController : MonoBehaviour {
 					else
 						paddle_update_pos.x += speed;
 				}
+
+				// 觸控狀態
+				if (Input.GetTouch(i).phase == TouchPhase.Ended) {
+					GameManager.instance.release_ball(team);
+				}
 			}
 		}
 
