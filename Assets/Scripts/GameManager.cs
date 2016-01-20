@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void release_ball(string team){
-		Debug.Log(team);
 		if (team == "BLUE"){
 			BallController bc = ballHoldedByBluePaddle.GetComponent<BallController>();
 			bc.be_released();
@@ -51,6 +50,17 @@ public class GameManager : MonoBehaviour {
 		else if (team == "RED"){
 			BallController bc = ballHoldedByRedPaddle.GetComponent<BallController>();
 			bc.be_released();
+		}
+	}
+
+	public void reborn_ball(string team){
+		if (team == "BLUE"){
+			float paddle_x = playerBluePaddle.transform.position.x;
+			ballHoldedByBluePaddle = Instantiate(blueBallPref, new Vector3(paddle_x,  -6.0f, 0.0f), Quaternion.identity) as GameObject;
+		}
+		else if (team == "RED"){
+			float paddle_x = playerRedPaddle.transform.position.x;
+			ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(paddle_x,  6.0f, 0.0f), Quaternion.identity) as GameObject;
 		}
 	}
 

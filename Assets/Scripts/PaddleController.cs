@@ -4,12 +4,19 @@ using System.Collections;
 public class PaddleController : MonoBehaviour {
 	public string team;
 	public float speed;
+	public float ball_reborn_time;
 
 	private float centre_line_pos_y;
+	private bool is_ready_to_lunch_ball;
+	private float ball_reborn_interval;
 
 	void Start () {
 		speed = 2.0f;
 		centre_line_pos_y = 0.0f;
+		ball_reborn_interval = 5.0f;
+		is_ready_to_lunch_ball = true;
+
+		ball_reborn_time = ball_reborn_interval;
 	}
 
 	void FixedUpdate () {
@@ -22,7 +29,6 @@ public class PaddleController : MonoBehaviour {
 			for (int i = 0; i < Input.touchCount; ++i) {
 				Touch touch = Input.GetTouch(i);
 				Vector3 touch_target = Camera.main.ScreenToWorldPoint(touch.position);
-
 
 				if(team == "BLUE" && touch_target.y > centre_line_pos_y)
 					continue;
@@ -40,12 +46,30 @@ public class PaddleController : MonoBehaviour {
 				}
 
 				// 觸控狀態
-				if (Input.GetTouch(i).phase == TouchPhase.Ended) {
+				if (is_ready_to_lunch_ball && Input.GetTouch(i).phase == TouchPhase.Ended) {
 					GameManager.instance.release_ball(team);
+					is_ready_to_lunch_ball = false;
 				}
 			}
 		}
 
+		// 倒數重生球時間
+		if (is_ready_to_lunch_ball == false && ball_reborn_time > 0.0f)
+			ball_reborn_time -= Time.deltaTime;
+
+		if (ball_reborn_time <= 0.0f){
+			GameManager.instance.reborn_ball(team);
+			is_ready_to_lunch_ball = true;
+			ball_reborn_time = ball_reborn_interval;
+		}
+
+
 		gameObject.transform.position = paddle_update_pos;
+	}
+
+	void OnCollisionEnter2D (Collision2D collision) {
+		if(collision.gameObject.tag == "Ball"){
+			ball_reborn_time = ball_reborn_interval;
+		}
 	}
 }
