@@ -8,9 +8,10 @@ public class BallController : MonoBehaviour {
 	public Sprite blue_ball_sprite;
 
 	public Vector2 init_forward_vec;
-	public string ball_team;
+	public Team ball_team;
 
 	public float init_ball_offset;
+	public bool is_embedded_paddle;
 
 	private Vector2 obj_forward_vec;
 	private Vector2 boundary_left_bottom;
@@ -18,7 +19,6 @@ public class BallController : MonoBehaviour {
 	private float boundary_margin;
 
 	private bool collision_mutex = true;
-	private bool is_embedded_paddle = true;
 
 	// Use this for initialization
 	void Start () {
@@ -40,11 +40,11 @@ public class BallController : MonoBehaviour {
 	void FixedUpdate () {
 		Vector2 origin_pos = gameObject.transform.position;
 		if (is_embedded_paddle){
-			if (ball_team == "RED"){
+			if (ball_team == Team.RED){
 				GameObject paddle = GameObject.Find("RedPaddle");
 				gameObject.transform.position = new Vector2(paddle.transform.position.x, paddle.transform.position.y - init_ball_offset);
 			}
-			else if (ball_team == "BLUE"){
+			else if (ball_team == Team.BLUE){
 				GameObject paddle = GameObject.Find("BluePaddle");
 				gameObject.transform.position = new Vector2(paddle.transform.position.x, paddle.transform.position.y + init_ball_offset);
 			}
@@ -59,12 +59,12 @@ public class BallController : MonoBehaviour {
 			}
 			if(ball_position.y > boundary_right_top.y - boundary_margin){
 				// 球掉出紅色區域
-				if (ball_team == "BLUE")
+				if (ball_team == Team.BLUE)
 					GameObject.FindWithTag("MainCamera").GetComponent<CameraEffect>().CameraShake();
 				Destroy(this.gameObject);
 			}
 			if(ball_position.y < boundary_left_bottom.y + boundary_margin) {
-				if (ball_team == "RED")
+				if (ball_team == Team.RED)
 					GameObject.FindWithTag("MainCamera").GetComponent<CameraEffect>().CameraShake();
 				Destroy(this.gameObject);
 			}
@@ -84,17 +84,19 @@ public class BallController : MonoBehaviour {
 				float paddle_renderer_right = paddle_renderer.bounds.max.x;
 				float contact_paddle_pos_bias = (contact.point.x-paddle_renderer_left)/(paddle_renderer_right-paddle_renderer_left);
 
+				obj_forward_vec = Vector3.Reflect(obj_forward_vec, contact.normal).normalized;
 				obj_forward_vec.x = Mathf.Lerp(-0.9f, 0.9f, contact_paddle_pos_bias);
-				obj_forward_vec.y = -obj_forward_vec.y;
+				obj_forward_vec = obj_forward_vec.normalized;
+				Debug.Log ("Collision paddle : " + obj_forward_vec);
 
 				PaddleController paddle_controller = collision.gameObject.GetComponent("PaddleController") as PaddleController;
-				if (paddle_controller.team == "RED"){
+				if (paddle_controller.team == Team.RED){
 					this.GetComponent<SpriteRenderer>().sprite = red_ball_sprite;
-					ball_team = "RED";
+					ball_team = Team.RED;
 				}
-				else if (paddle_controller.team == "BLUE"){
+				else if (paddle_controller.team == Team.BLUE){
 					this.GetComponent<SpriteRenderer>().sprite = blue_ball_sprite;
-					ball_team = "BLUE";
+					ball_team = Team.BLUE;
 				}
 			}
 		}
@@ -109,7 +111,6 @@ public class BallController : MonoBehaviour {
 	}
 
 	public void be_released(){
-		Debug.Log(ball_team);
 		is_embedded_paddle = false;
 	}
 }

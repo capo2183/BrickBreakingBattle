@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum Team{
+	BLUE, RED
+}
+
 public class GameManager : MonoBehaviour {
-	public float health_point = 100.0f;
 	public int total_bricks_count = 0;
+	public int blueScore = 0;
+	public int redScore = 0;
 
 	// Game object
 	public GameObject bluePaddlePref;
@@ -38,34 +43,39 @@ public class GameManager : MonoBehaviour {
 		playerRedPaddle = Instantiate(redPaddlePref, new Vector3(0.0f,  7.0f, 0.0f), Quaternion.identity) as GameObject;
 		playerBluePaddle.name = "BluePaddle";
 		playerRedPaddle.name = "RedPaddle";
-		ballHoldedByBluePaddle = Instantiate(blueBallPref, new Vector3(0.0f,  -6.0f, 0.0f), Quaternion.identity) as GameObject;
-		ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(0.0f,  6.0f, 0.0f), Quaternion.identity) as GameObject;
+		ballHoldedByBluePaddle = Instantiate(blueBallPref, new Vector3(0.0f, -6.0f, 0.0f), Quaternion.identity) as GameObject;
+		ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(0.0f, 6.0f, 0.0f), Quaternion.identity) as GameObject;
 	}
 
-	public void release_ball(string team){
-		if (team == "BLUE"){
+	public void release_ball(Team team){
+		if (team == Team.BLUE && ballHoldedByBluePaddle != null){
 			BallController bc = ballHoldedByBluePaddle.GetComponent<BallController>();
 			bc.be_released();
 		}
-		else if (team == "RED"){
+		else if (team == Team.RED && ballHoldedByRedPaddle != null){
 			BallController bc = ballHoldedByRedPaddle.GetComponent<BallController>();
 			bc.be_released();
 		}
 	}
 
-	public void reborn_ball(string team){
-		if (team == "BLUE"){
+	public void reborn_ball(Team team){
+		if (team == Team.BLUE){
 			float paddle_x = playerBluePaddle.transform.position.x;
 			ballHoldedByBluePaddle = Instantiate(blueBallPref, new Vector3(paddle_x,  -6.0f, 0.0f), Quaternion.identity) as GameObject;
 		}
-		else if (team == "RED"){
+		else if (team == Team.RED){
 			float paddle_x = playerRedPaddle.transform.position.x;
 			ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(paddle_x,  6.0f, 0.0f), Quaternion.identity) as GameObject;
 		}
 	}
 
-	public void breakBrick()
+	public void breakBrick(int break_score, Team team)
 	{
+		if (team == Team.BLUE)
+			blueScore += break_score;
+		else if (team == Team.RED)
+			redScore += break_score;
+
 		total_bricks_count--;
 	}
 
