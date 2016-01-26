@@ -13,12 +13,18 @@ public class BallController : MonoBehaviour {
 	public float init_ball_offset;
 	public bool is_embedded_paddle;
 
+	public Material blue_trail;
+	public Material red_trail;
+	public GameObject blue_spark;
+	public GameObject red_spark;
+
 	private Vector2 obj_forward_vec;
 	private Vector2 boundary_left_bottom;
 	private Vector2 boundary_right_top;
 	private float boundary_margin;
 
 	private bool collision_mutex = true;
+	private TrailRenderer trail_renderer;
 
 	// Use this for initialization
 	void Start () {
@@ -34,6 +40,9 @@ public class BallController : MonoBehaviour {
 		boundary_left_bottom = Camera.main.ScreenToWorldPoint(screen_boundary_left_bottom);
 		boundary_right_top = Camera.main.ScreenToWorldPoint(screen_boundary_right_top);
 
+		trail_renderer = GetComponent<TrailRenderer>();
+		trail_renderer.enabled = false;
+		trail_renderer.time = 0.0f;
 	}
 	
 	// Update is called once per frame
@@ -91,11 +100,15 @@ public class BallController : MonoBehaviour {
 
 				PaddleController paddle_controller = collision.gameObject.GetComponent("PaddleController") as PaddleController;
 				if (paddle_controller.team == Team.RED){
+					Instantiate(red_spark, contact.point, Quaternion.identity);
 					this.GetComponent<SpriteRenderer>().sprite = red_ball_sprite;
+					trail_renderer.material = red_trail;
 					ball_team = Team.RED;
 				}
-				else if (paddle_controller.team == Team.BLUE){
+				else if (paddle_controller.team == Team.BLUE){					
+					Instantiate(blue_spark, contact.point, Quaternion.identity);
 					this.GetComponent<SpriteRenderer>().sprite = blue_ball_sprite;
+					trail_renderer.material = blue_trail;
 					ball_team = Team.BLUE;
 				}
 			}
@@ -106,11 +119,19 @@ public class BallController : MonoBehaviour {
 				collision_mutex = false;
 				ContactPoint2D contact = collision.contacts[0];
 				obj_forward_vec = Vector3.Reflect(obj_forward_vec, contact.normal).normalized;
+				if (ball_team == Team.RED){
+					Instantiate(red_spark, contact.point, Quaternion.identity);
+				}
+				else if (ball_team == Team.BLUE){					
+					Instantiate(blue_spark, contact.point, Quaternion.identity);
+				}
 			}
 		}
 	}
 
 	public void be_released(){
 		is_embedded_paddle = false;
+		trail_renderer.enabled = true;
+		trail_renderer.time = 0.4f;
 	}
 }

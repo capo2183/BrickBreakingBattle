@@ -43,14 +43,15 @@ public class GameManager : MonoBehaviour {
 		playerRedPaddle = Instantiate(redPaddlePref, new Vector3(0.0f,  7.0f, 0.0f), Quaternion.identity) as GameObject;
 		playerBluePaddle.name = "BluePaddle";
 		playerRedPaddle.name = "RedPaddle";
-		ballHoldedByBluePaddle = Instantiate(blueBallPref, new Vector3(0.0f, -6.0f, 0.0f), Quaternion.identity) as GameObject;
-		ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(0.0f, 6.0f, 0.0f), Quaternion.identity) as GameObject;
+		ballHoldedByBluePaddle = Instantiate(blueBallPref, new Vector3(0.0f, -6.0f, -3.0f), Quaternion.identity) as GameObject;
+		ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(0.0f, 6.0f, -3.0f), Quaternion.identity) as GameObject;
 	}
 
 	public void release_ball(Team team){
 		if (team == Team.BLUE && ballHoldedByBluePaddle != null){
 			BallController bc = ballHoldedByBluePaddle.GetComponent<BallController>();
 			bc.be_released();
+
 		}
 		else if (team == Team.RED && ballHoldedByRedPaddle != null){
 			BallController bc = ballHoldedByRedPaddle.GetComponent<BallController>();
