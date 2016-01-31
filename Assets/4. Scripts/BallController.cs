@@ -69,12 +69,12 @@ public class BallController : MonoBehaviour {
 			if(ball_position.y > boundary_right_top.y - boundary_margin){
 				// 球掉出紅色區域
 				if (ball_team == Team.BLUE)
-					GameObject.FindWithTag("MainCamera").GetComponent<CameraEffect>().CameraShake();
+					GameManager.instance.loss_ball(ball_team);
 				Destroy(this.gameObject);
 			}
 			if(ball_position.y < boundary_left_bottom.y + boundary_margin) {
 				if (ball_team == Team.RED)
-					GameObject.FindWithTag("MainCamera").GetComponent<CameraEffect>().CameraShake();
+					GameManager.instance.loss_ball(ball_team);
 				Destroy(this.gameObject);
 			}
 			

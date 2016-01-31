@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour {
 	public GameObject redPaddlePref;
 	public GameObject blueBallPref;
 	public GameObject redBallPref;
+	public GameObject alertLightBluePref;
+	public GameObject alertLightRedPref;
 
 	public static GameManager instance = null;
 
@@ -68,6 +70,14 @@ public class GameManager : MonoBehaviour {
 			float paddle_x = playerRedPaddle.transform.position.x;
 			ballHoldedByRedPaddle = Instantiate(redBallPref, new Vector3(paddle_x,  6.0f, 0.0f), Quaternion.identity) as GameObject;
 		}
+	}
+
+	public void loss_ball(Team team){		
+		GameObject.FindWithTag("MainCamera").GetComponent<CameraEffect>().CameraShake();
+		if (team == Team.BLUE)
+			Instantiate(alertLightRedPref, new Vector3(0.0f, 9.5f, 0.0f), Quaternion.identity);
+		else if (team == Team.RED)
+			Instantiate(alertLightBluePref, new Vector3(0.0f, -9.0f, 0.0f), Quaternion.identity);
 	}
 
 	public void breakBrick(int break_score, Team team)
