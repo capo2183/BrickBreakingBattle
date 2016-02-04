@@ -13,8 +13,8 @@ public class BallController : MonoBehaviour {
 	public float init_ball_offset;
 	public bool is_embedded_paddle;
 
-	public Material blue_trail;
-	public Material red_trail;
+	public GameObject blue_trail;
+	public GameObject red_trail;
 	public GameObject blue_spark;
 	public GameObject red_spark;
 
@@ -24,12 +24,11 @@ public class BallController : MonoBehaviour {
 	private float boundary_margin;
 
 	private bool collision_mutex = true;
-	private TrailRenderer trail_renderer;
 
 	// Use this for initialization
 	void Start () {
 		obj_forward_vec = init_forward_vec;
-		obj_moving_speed = 0.2f;
+		obj_moving_speed = 0.1f;
 		boundary_margin = 0.15f;
 
 		obj_forward_vec.Normalize();
@@ -39,10 +38,6 @@ public class BallController : MonoBehaviour {
 		Vector2 screen_boundary_right_top = new Vector2(Screen.width, Screen.height);
 		boundary_left_bottom = Camera.main.ScreenToWorldPoint(screen_boundary_left_bottom);
 		boundary_right_top = Camera.main.ScreenToWorldPoint(screen_boundary_right_top);
-
-		trail_renderer = GetComponent<TrailRenderer>();
-		trail_renderer.enabled = false;
-		trail_renderer.time = 0.0f;
 	}
 	
 	// Update is called once per frame
@@ -96,20 +91,15 @@ public class BallController : MonoBehaviour {
 				obj_forward_vec = Vector3.Reflect(obj_forward_vec, contact.normal).normalized;
 				obj_forward_vec.x = Mathf.Lerp(-0.9f, 0.9f, contact_paddle_pos_bias);
 				obj_forward_vec = obj_forward_vec.normalized;
-				Debug.Log ("Collision paddle : " + obj_forward_vec);
 
 				PaddleController paddle_controller = collision.gameObject.GetComponent("PaddleController") as PaddleController;
 				if (paddle_controller.team == Team.RED){
 					Instantiate(red_spark, contact.point, Quaternion.identity);
-					this.GetComponent<SpriteRenderer>().sprite = red_ball_sprite;
-					trail_renderer.material = red_trail;
-					ball_team = Team.RED;
+					this.set_team_color(Team.RED);
 				}
 				else if (paddle_controller.team == Team.BLUE){					
 					Instantiate(blue_spark, contact.point, Quaternion.identity);
-					this.GetComponent<SpriteRenderer>().sprite = blue_ball_sprite;
-					trail_renderer.material = blue_trail;
-					ball_team = Team.BLUE;
+					this.set_team_color(Team.BLUE);
 				}
 			}
 		}
@@ -129,9 +119,24 @@ public class BallController : MonoBehaviour {
 		}
 	}
 
+	public void set_team_color(Team team){
+		if (team == Team.RED){
+			this.GetComponent<SpriteRenderer>().sprite = red_ball_sprite;
+			Vector3 trail_position = new Vector3(this.transform.position.x + 0.1f, this.transform.position.y, this.transform.position.z);
+			GameObject trailObject = Instantiate(red_trail, trail_position, Quaternion.identity) as GameObject;
+			trailObject.transform.parent = this.transform;
+			ball_team = Team.RED;			
+		}
+		else if(team == Team.BLUE){
+			this.GetComponent<SpriteRenderer>().sprite = blue_ball_sprite;
+			Vector3 trail_position = new Vector3(this.transform.position.x + 0.1f, this.transform.position.y, this.transform.position.z);
+			GameObject trailObject = Instantiate(blue_trail, trail_position, Quaternion.identity) as GameObject;
+			trailObject.transform.parent = this.transform;		
+			ball_team = Team.BLUE;
+		}
+	}
+
 	public void be_released(){
 		is_embedded_paddle = false;
-		trail_renderer.enabled = true;
-		trail_renderer.time = 0.4f;
 	}
 }
