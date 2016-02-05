@@ -23,9 +23,21 @@ public class BallController : MonoBehaviour {
 	private Vector2 boundary_right_top;
 	private float boundary_margin;
 
+	private GameObject redTrailObject;
+	private GameObject blueTrailObject;
+
 	private bool collision_mutex = true;
 
 	// Use this for initialization
+	void Awake() {
+		// Trail
+		Vector3 trail_position = new Vector3(this.transform.position.x + 0.1f, this.transform.position.y, this.transform.position.z);
+		redTrailObject = Instantiate(red_trail, trail_position, Quaternion.identity) as GameObject;
+		blueTrailObject = Instantiate(blue_trail, trail_position, Quaternion.identity) as GameObject;
+		redTrailObject.transform.parent = this.transform;
+		blueTrailObject.transform.parent = this.transform;
+	}
+
 	void Start () {
 		obj_forward_vec = init_forward_vec;
 		obj_moving_speed = 0.1f;
@@ -122,16 +134,14 @@ public class BallController : MonoBehaviour {
 	public void set_team_color(Team team){
 		if (team == Team.RED){
 			this.GetComponent<SpriteRenderer>().sprite = red_ball_sprite;
-			Vector3 trail_position = new Vector3(this.transform.position.x + 0.1f, this.transform.position.y, this.transform.position.z);
-			GameObject trailObject = Instantiate(red_trail, trail_position, Quaternion.identity) as GameObject;
-			trailObject.transform.parent = this.transform;
+			redTrailObject.SetActive(true);
+			blueTrailObject.SetActive(false);
 			ball_team = Team.RED;			
 		}
 		else if(team == Team.BLUE){
 			this.GetComponent<SpriteRenderer>().sprite = blue_ball_sprite;
-			Vector3 trail_position = new Vector3(this.transform.position.x + 0.1f, this.transform.position.y, this.transform.position.z);
-			GameObject trailObject = Instantiate(blue_trail, trail_position, Quaternion.identity) as GameObject;
-			trailObject.transform.parent = this.transform;		
+			redTrailObject.SetActive(false);
+			blueTrailObject.SetActive(true);
 			ball_team = Team.BLUE;
 		}
 	}
