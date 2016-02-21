@@ -1,11 +1,13 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\4. Scripts\BallController.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\4. Scripts\GameManager.cs">
     <Files>
-      <File FileName="Assets\4. Scripts\AlertLight.cs" Line="33" Column="56" />
-      <File FileName="Assets\4. Scripts\BallController.cs" Line="78" Column="28" />
-      <File FileName="Assets\4. Scripts\GameManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\4. Scripts\CameraEffect.cs" Line="1" Column="1" />
+      <File FileName="Assets\4. Scripts\Level.cs" Line="18" Column="26" />
+      <File FileName="Assets\4. Scripts\GameManager.cs" Line="107" Column="56" />
+      <File FileName="Assets\4. Scripts\UI\IntervalCounting.cs" Line="107" Column="31" />
+      <File FileName="Assets\4. Scripts\Brick.cs" Line="25" Column="4" />
+      <File FileName="Assets\4. Scripts\BallController.cs" Line="124" Column="32" />
+      <File FileName="Assets\4. Scripts\UI\UIManager.cs" Line="9" Column="32" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

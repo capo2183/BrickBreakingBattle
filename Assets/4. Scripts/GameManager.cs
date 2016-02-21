@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 	public int total_bricks_count = 0;
 	public int blueScore = 0;
 	public int redScore = 0;
+	public int level_id = 1;
 
 	// Game object
 	public GameObject bluePaddlePref;
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour {
 	public GameObject alertLightRedPref;
 
 	public static GameManager instance = null;
+
+	public int loss_ball_point = 300;
 
 	private GameObject playerBluePaddle;
 	private GameObject playerRedPaddle;
@@ -50,6 +53,25 @@ public class GameManager : MonoBehaviour {
 		ballHoldedByRedPaddle.GetComponent<BallController>().set_team_color(Team.RED);
 	}
 
+	public void Start()
+	{		
+		load_level (level_id);
+	}
+
+	public void enter_next_level()
+	{
+		level_id += 1;
+		load_level (level_id);
+	}
+
+	public void load_level(int _id)
+	{
+		// Level 
+		string load_level_name = "Levels/Level_" + _id;
+		GameObject level = Instantiate (Resources.Load (load_level_name)) as GameObject;
+		total_bricks_count = level.GetComponent<Level>().getBrickCount();
+	}
+
 	public void release_ball(Team team){
 		if (team == Team.BLUE && ballHoldedByBluePaddle != null){  
 			BallController bc = ballHoldedByBluePaddle.GetComponent<BallController>();
@@ -77,10 +99,14 @@ public class GameManager : MonoBehaviour {
 
 	public void loss_ball(Team team){		
 		GameObject.FindWithTag("MainCamera").GetComponent<CameraEffect>().CameraShake();
-		if (team == Team.BLUE)
+		if (team == Team.BLUE){
 			Instantiate(alertLightRedPref, new Vector3(0.0f, 5.7f, 0.0f), Quaternion.identity);
-		else if (team == Team.RED)
+			redScore -= loss_ball_point;
+		}
+		else if (team == Team.RED){
 			Instantiate(alertLightBluePref, new Vector3(0.0f, -5.7f, 0.0f), Quaternion.identity);
+			blueScore -= loss_ball_point;
+		}
 	}
 
 	public void breakBrick(int break_score, Team team)
@@ -91,6 +117,9 @@ public class GameManager : MonoBehaviour {
 			redScore += break_score;
 
 		total_bricks_count--;
+
+		if (total_bricks_count <= 0)
+			UIManager.instance.setIntervalCounting();
 	}
 
 }
