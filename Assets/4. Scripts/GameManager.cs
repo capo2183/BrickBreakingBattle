@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum Team{
 	BLUE, RED
@@ -24,7 +25,8 @@ public class GameManager : MonoBehaviour {
 
 	private GameObject playerBluePaddle;
 	private GameObject playerRedPaddle;
-	private GameObject[] balls;
+
+	List<GameObject> balls = new List<GameObject>();
 
 	private GameObject ballHoldedByBluePaddle;
 	private GameObject ballHoldedByRedPaddle;
@@ -47,10 +49,8 @@ public class GameManager : MonoBehaviour {
 		playerRedPaddle = Instantiate(redPaddlePref, new Vector3(0.0f,  4.0f, 0.0f), Quaternion.identity) as GameObject;
 		playerBluePaddle.name = "BluePaddle";
 		playerRedPaddle.name = "RedPaddle";
-		ballHoldedByBluePaddle = Instantiate(BallPref, new Vector3(0.0f, -3.5f, 0.0f), Quaternion.identity) as GameObject;		
-		ballHoldedByBluePaddle.GetComponent<BallController>().set_team_color(Team.BLUE);
-		ballHoldedByRedPaddle = Instantiate(BallPref, new Vector3(0.0f, 3.5f, 0.0f), Quaternion.identity) as GameObject;
-		ballHoldedByRedPaddle.GetComponent<BallController>().set_team_color(Team.RED);
+		reborn_ball(Team.BLUE);
+		reborn_ball(Team.RED);
 	}
 
 	public void Start()
@@ -68,7 +68,8 @@ public class GameManager : MonoBehaviour {
 	{
 		// Level 
 		string load_level_name = "Levels/Level_" + _id;
-		GameObject level = Instantiate (Resources.Load (load_level_name)) as GameObject;
+		GameObject level = Instantiate (Resources.Load (load_level_name), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as GameObject;
+
 		total_bricks_count = level.GetComponent<Level>().getBrickCount();
 	}
 
@@ -89,11 +90,13 @@ public class GameManager : MonoBehaviour {
 			float paddle_x = playerBluePaddle.transform.position.x;
 			ballHoldedByBluePaddle = Instantiate(BallPref, new Vector3(paddle_x,  -3.0f, 0.0f), Quaternion.identity) as GameObject;
 			ballHoldedByBluePaddle.GetComponent<BallController>().set_team_color(Team.BLUE);
+			balls.Add(ballHoldedByBluePaddle);
 		}
 		else if (team == Team.RED){
 			float paddle_x = playerRedPaddle.transform.position.x;
 			ballHoldedByRedPaddle = Instantiate(BallPref, new Vector3(paddle_x,  3.0f, 0.0f), Quaternion.identity) as GameObject;
 			ballHoldedByRedPaddle.GetComponent<BallController>().set_team_color(Team.RED);
+			balls.Add(ballHoldedByRedPaddle);
 		}
 	}
 
@@ -109,6 +112,20 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public void destory_ball(GameObject ball){
+		balls.Remove(ball);
+	}
+
+	public void destory_all_balls(){
+		foreach (GameObject ball in balls)
+		{
+			Destroy(ball);
+		}
+
+		balls.Clear();
+	}
+
+
 	public void breakBrick(int break_score, Team team)
 	{
 		if (team == Team.BLUE)
@@ -118,8 +135,14 @@ public class GameManager : MonoBehaviour {
 
 		total_bricks_count--;
 
-		if (total_bricks_count <= 0)
+		if (total_bricks_count <= 0){
+			foreach (GameObject ball in balls)
+			{
+				if(ball != null)
+					ball.GetComponent<BallController>().set_slow_down_to_stop_and_delete();
+			}
 			UIManager.instance.setIntervalCounting();
+		}
 	}
 
 }

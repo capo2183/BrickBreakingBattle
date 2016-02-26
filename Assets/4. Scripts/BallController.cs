@@ -27,6 +27,7 @@ public class BallController : MonoBehaviour {
 	private GameObject blueTrailObject;
 
 	private bool collision_mutex = true;
+	private bool is_slow_down_to_stop = false;
 
 	// Use this for initialization
 	void Awake() {
@@ -66,6 +67,15 @@ public class BallController : MonoBehaviour {
 			}
 		}
 		else{
+			if(is_slow_down_to_stop){
+				if(obj_moving_speed > 0.0f)
+					obj_moving_speed -= 0.001f;
+				else{
+					obj_moving_speed = 0.0f;
+					Destroy(this.gameObject);
+				}
+			}
+
 			gameObject.transform.position = origin_pos + (obj_forward_vec * obj_moving_speed);
 			
 			// 若球超出螢幕邊界，則改變球的方向
@@ -77,11 +87,13 @@ public class BallController : MonoBehaviour {
 				// 球掉出紅色區域
 				if (ball_team == Team.BLUE)
 					GameManager.instance.loss_ball(ball_team);
+				GameManager.instance.destory_ball(this.gameObject);
 				Destroy(this.gameObject);
 			}
 			if(ball_position.y < boundary_left_bottom.y + boundary_margin) {
 				if (ball_team == Team.RED)
-					GameManager.instance.loss_ball(ball_team);
+					GameManager.instance.loss_ball(ball_team);				
+				GameManager.instance.destory_ball(this.gameObject);
 				Destroy(this.gameObject);
 			}
 			
@@ -144,6 +156,10 @@ public class BallController : MonoBehaviour {
 			blueTrailObject.SetActive(true);
 			ball_team = Team.BLUE;
 		}
+	}
+
+	public void set_slow_down_to_stop_and_delete(){
+		is_slow_down_to_stop = true;
 	}
 
 	public void be_released(){
